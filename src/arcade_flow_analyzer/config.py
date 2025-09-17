@@ -25,8 +25,6 @@ class Config:
 
     # Data directories
     DATA_DIR = PROJECT_ROOT / "data"
-    RAW_DATA_DIR = DATA_DIR / "raw"
-    PROCESSED_DATA_DIR = DATA_DIR / "processed"
 
     # Working directories
     CACHE_DIR = PROJECT_ROOT / ".cache"
@@ -34,7 +32,7 @@ class Config:
     LOGS_DIR = PROJECT_ROOT / "logs"
 
     # Input files
-    FLOW_FILE = RAW_DATA_DIR / "Flow.json"
+    FLOW_FILE = DATA_DIR / "Flow.json"
 
     # Output files
     REPORT_FILE = RESULTS_DIR / "flow_analysis_report.md"
@@ -62,8 +60,6 @@ class Config:
 
         # Create necessary directories
         cls.DATA_DIR.mkdir(exist_ok=True)
-        cls.RAW_DATA_DIR.mkdir(exist_ok=True)
-        cls.PROCESSED_DATA_DIR.mkdir(exist_ok=True)
         cls.CACHE_DIR.mkdir(exist_ok=True)
         cls.RESULTS_DIR.mkdir(exist_ok=True)
         cls.LOGS_DIR.mkdir(exist_ok=True)

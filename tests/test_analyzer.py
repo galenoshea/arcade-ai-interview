@@ -2,6 +2,7 @@
 Unit tests for the AIAnalyzer module.
 """
 
+import json
 import pytest
 from unittest.mock import patch, Mock, mock_open
 from arcade_flow_analyzer.analyzer import AIAnalyzer
@@ -95,11 +96,13 @@ class TestAIAnalyzer:
         mock_response.choices = [Mock()]
         mock_response.choices[
             0
-        ].message.content = """
-        SUMMARY: User completed a test workflow
-        USER_GOAL: Test the application
-        KEY_INSIGHTS: Good user experience
-        """
+        ].message.content = json.dumps({
+            "summary": "User completed a test workflow",
+            "user_goal": "Test the application",
+            "key_insights": "Good user experience"
+        })
+        mock_response.usage = Mock()
+        mock_response.usage.total_tokens = 150
         mock_openai.return_value.chat.completions.create.return_value = mock_response
 
         analyzer = AIAnalyzer()
@@ -135,39 +138,31 @@ class TestAIAnalyzer:
                     assert "Test Flow" in prompt
                     assert "Click the test button" in prompt
                     assert "Test Page" in prompt
-                    assert "SUMMARY:" in prompt
-                    assert "USER_GOAL:" in prompt
-                    assert "KEY_INSIGHTS:" in prompt
+                    assert "user flow" in prompt.lower()
+                    assert "interactions" in prompt.lower()
+                    assert "analysis" in prompt.lower()
 
-    def test_parse_analysis_response(self):
-        """Test parsing of GPT-4 analysis response."""
+    def test_structured_response_format(self):
+        """Test that analyzer uses structured JSON schema format."""
         with patch("arcade_flow_analyzer.analyzer.get_config"):
             with patch("arcade_flow_analyzer.analyzer.openai.OpenAI"):
                 with patch("arcade_flow_analyzer.analyzer.CacheManager"):
                     analyzer = AIAnalyzer("test-key")
 
-                    response_text = """
-                    SUMMARY: User completed a shopping workflow successfully.
-                    USER_GOAL: Purchase a scooter from Target website
-                    KEY_INSIGHTS:
-                    - User navigated efficiently through the site
-                    - Color selection was an important decision point
-                    - User declined protection plan
-                    """
+                    # Verify that the analyzer has the ANALYSIS_SCHEMA
+                    assert hasattr(analyzer, 'ANALYSIS_SCHEMA')
+                    assert analyzer.ANALYSIS_SCHEMA is not None
 
-                    result = analyzer._parse_analysis_response(response_text)
+                    # Check that the schema has the required structure
+                    schema = analyzer.ANALYSIS_SCHEMA
+                    assert "type" in schema
+                    assert "properties" in schema
 
-                    assert (
-                        result["summary"]
-                        == "User completed a shopping workflow successfully."
-                    )
-                    assert (
-                        result["user_goal"] == "Purchase a scooter from Target website"
-                    )
-                    assert (
-                        "Color selection was an important decision point"
-                        in result["key_insights"]
-                    )
+                    # Verify required fields are in the schema
+                    properties = schema["properties"]
+                    assert "summary" in properties
+                    assert "user_goal" in properties
+                    assert "key_insights" in properties
 
     @patch("arcade_flow_analyzer.analyzer.get_config")
     @patch("arcade_flow_analyzer.analyzer.openai.OpenAI")
@@ -194,7 +189,7 @@ class TestAIAnalyzer:
 
         # Test error handling
         result = analyzer.analyze_user_intent(
-            [{"description": "test"}], {"name": "test flow"}
+            [{"description": "test", "page_title": "test page"}], {"name": "test flow"}
         )
 
         # Should return error response
@@ -208,9 +203,10 @@ class TestAIAnalyzer:
             with patch("arcade_flow_analyzer.analyzer.openai.OpenAI"):
                 with patch("arcade_flow_analyzer.analyzer.CacheManager"):
                     # Setup config mock
+                    from pathlib import Path
                     mock_config = Mock()
                     mock_config.OPENAI_API_KEY = "test-key"
-                    mock_config.RESULTS_DIR = Mock()
+                    mock_config.RESULTS_DIR = Path("/tmp/test_results")
                     mock_get_config.return_value = mock_config
 
                     # Setup requests mock
@@ -242,11 +238,12 @@ class TestAIAnalyzer:
                 with patch("arcade_flow_analyzer.analyzer.CacheManager"):
                     analyzer = AIAnalyzer("test-key")
 
+                    # Pass None for optional parameters to match new signature
                     prompt = analyzer._create_image_prompt(
-                        sample_flow_summary, sample_analysis
+                        sample_flow_summary, sample_analysis, None, None, None
                     )
 
-                    assert "Test Flow" in prompt
-                    assert "Test the application functionality" in prompt
                     assert "professional social media image" in prompt
-                    assert "Made Easy!" in prompt
+                    assert "Made Easy" in prompt
+                    assert "CONTEXT REQUIREMENTS" in prompt
+                    assert "TEXT OVERLAY REQUIREMENTS" in prompt

@@ -30,8 +30,11 @@ A professional AI-powered analysis tool for Arcade flow recordings that generate
    ```
 
 3. **Set up environment variables**
-   - Copy the `.env` file and add your OpenAI API key
-   - The `.env` file is already configured for this project
+   ```bash
+   cp .env.example .env
+   ```
+   - Edit `.env` and add your OpenAI API key from https://platform.openai.com/api-keys
+   - Other settings have sensible defaults
 
 ## Project Structure
 
@@ -41,15 +44,18 @@ arcade-ai-interview/
 │   └── arcade_flow_analyzer/     # Main application package
 │       ├── __init__.py
 │       └── main.py              # Core analysis logic
-├── cache/                       # API response cache (gitignored)
-├── output/                      # Generated reports and images
+├── data/
+│   └── Flow.json                # Input flow data
+├── results/                     # Generated reports and images
 │   ├── flow_analysis_report.md  # Comprehensive analysis report
 │   └── social_media_image.png   # Generated social media asset
+├── tests/                       # Unit tests
+├── .cache/                      # API response cache (gitignored)
 ├── .env                         # Environment variables (gitignored)
+├── .env.example                 # Environment variables template
 ├── .gitignore                   # Git ignore rules
-├── Flow.json                    # Input flow data
 ├── pyproject.toml              # Poetry configuration
-└── README.md                   # Original challenge description
+└── README.md                   # Project documentation
 ```
 
 ## Usage

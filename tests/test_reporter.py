@@ -45,13 +45,21 @@ class TestReportGenerator:
 
         reporter = ReportGenerator()
 
+        # Create a fake image file for the test
+        fake_image_path = temp_results_dir / "test_image.png"
+        fake_image_path.touch()  # Create the file
+
         with patch("builtins.open", mock_open()) as mock_file:
             report_path = reporter.generate_markdown_report(
                 sample_flow_summary,
                 sample_interactions,
                 sample_analysis,
                 sample_journey_analysis,
-                "test_image.png",
+                str(fake_image_path),
+                None,  # visual_analysis
+                None,  # behavioral_analysis
+                None,  # chapters
+                None,  # videos
             )
 
             # Verify file was written
@@ -63,7 +71,7 @@ class TestReportGenerator:
             assert "Test Flow" in written_content
             assert "Click the test button" in written_content
             assert "Test the application functionality" in written_content
-            assert "test_image.png" in written_content
+            assert str(fake_image_path) in written_content
 
             # Verify return value
             assert str(temp_results_dir / "flow_analysis_report.md") == report_path
@@ -85,6 +93,10 @@ class TestReportGenerator:
                 sample_analysis,
                 sample_journey_analysis,
                 None,  # No image
+                None,  # visual_analysis
+                None,  # behavioral_analysis
+                None,  # chapters
+                None,  # videos
             )
 
             # Check for required sections
@@ -126,6 +138,10 @@ class TestReportGenerator:
                     sample_analysis,
                     sample_journey_analysis,
                     "test_image.png",
+                    None,  # visual_analysis
+                    None,  # behavioral_analysis
+                    None,  # chapters
+                    None,  # videos
                 )
 
                 assert "![Social Media Image](test_image.png)" in content
@@ -148,6 +164,10 @@ class TestReportGenerator:
                 sample_analysis,
                 sample_journey_analysis,
                 None,
+                None,  # visual_analysis
+                None,  # behavioral_analysis
+                None,  # chapters
+                None,  # videos
             )
 
             assert (
@@ -168,6 +188,10 @@ class TestReportGenerator:
                 sample_analysis,
                 sample_journey_analysis,
                 None,
+                None,  # visual_analysis
+                None,  # behavioral_analysis
+                None,  # chapters
+                None,  # videos
             )
 
             assert "No interactions captured" in content
@@ -201,7 +225,7 @@ class TestReportGenerator:
             # Verify summary content
             assert "# Flow Analysis Summary" in written_content
             assert "Test Flow" in written_content
-            assert "User Interactions: 1" in written_content
+            assert "**User Interactions:** 1" in written_content
             assert "Test the application functionality" in written_content
 
             # Verify return value
@@ -227,6 +251,10 @@ class TestReportGenerator:
                 sample_analysis,
                 sample_journey_analysis,
                 None,
+                None,  # visual_analysis
+                None,  # behavioral_analysis
+                None,  # chapters
+                None,  # videos
             )
 
             assert "User Experience:** Smooth" in content
@@ -263,6 +291,10 @@ class TestReportGenerator:
                 sample_analysis,
                 journey_analysis,
                 None,
+                None,  # visual_analysis
+                None,  # behavioral_analysis
+                None,  # chapters
+                None,  # videos
             )
 
             assert "**Home Page**: `https://example.com`" in content

@@ -126,7 +126,7 @@ def main():
     except FileNotFoundError as e:
         logger.error(f"Required file not found: {e}")
         print(f"\nERROR: File not found: {e}")
-        print("Make sure the Flow.json file is in the data/raw/ directory")
+        print("Make sure the Flow.json file is in the data/ directory")
         return 1
 
     except ValueError as e:

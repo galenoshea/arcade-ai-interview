@@ -49,7 +49,8 @@ SAMPLE_FLOW_DATA = {
 @pytest.fixture
 def sample_flow_data():
     """Provide sample flow data for testing."""
-    return SAMPLE_FLOW_DATA.copy()
+    import copy
+    return copy.deepcopy(SAMPLE_FLOW_DATA)
 
 
 @pytest.fixture

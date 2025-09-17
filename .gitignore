@@ -67,8 +67,8 @@ __pycache__/
 temp/
 
 # Data (track structure, not sensitive content)
-data/raw/*.json
-data/processed/
+# Uncomment if you want to ignore data files:
+# data/*.json
 
 # Generated results (optional - you may want to commit these)
 # Uncomment if you don't want to commit generated reports and images
