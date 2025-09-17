@@ -7,6 +7,8 @@ using OpenAI's GPT-4 and DALL-E 3 for user intent analysis and image generation.
 
 import json
 import logging
+import tempfile
+import base64
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -412,24 +414,40 @@ class AIAnalyzer:
             }
         ]
 
-        # Add each screenshot URL
+        # Add each screenshot with download fallback for reliability
         for screenshot in screenshots:
-            if screenshot.get("screenshot_url"):
-                content.append(
-                    {
+            screenshot_url = screenshot.get("screenshot_url")
+            if screenshot_url:
+                # Try base64 download first for CDN reliability
+                b64_data = self._download_screenshot(screenshot_url)
+
+                if b64_data:
+                    # Use downloaded base64 data for reliable analysis
+                    content.append({
                         "type": "image_url",
                         "image_url": {
-                            "url": screenshot["screenshot_url"],
-                            "detail": "low",  # Use low detail for cost efficiency
-                        },
-                    }
-                )
+                            "url": b64_data,
+                            "detail": "low"  # Cost efficiency
+                        }
+                    })
+                else:
+                    # Fallback to direct URL if download fails
+                    logger.warning(f"Using direct URL fallback for {screenshot_url}")
+                    content.append({
+                        "type": "image_url",
+                        "image_url": {
+                            "url": screenshot_url,
+                            "detail": "low"
+                        }
+                    })
 
         messages.append({"role": "user", "content": content})
 
-        # Call GPT-4o for vision analysis
+        # Use vision tier for screenshot analysis (optimized)
+        model_tier = "vision"
+        selected_model = self.MODEL_TIERS[model_tier]["model"]
         response = self.client.chat.completions.create(
-            model="gpt-4o", messages=messages, max_tokens=800
+            model=selected_model, messages=messages, max_tokens=800
         )
 
         analysis_text = response.choices[0].message.content
@@ -440,6 +458,39 @@ class AIAnalyzer:
 
         # Parse the response into structured data
         return self._parse_vision_response(analysis_text)
+
+    def _download_screenshot(self, url: str) -> Optional[str]:
+        """
+        Download screenshot and convert to base64 for reliable vision analysis.
+
+        Args:
+            url: Screenshot URL
+
+        Returns:
+            Base64 encoded image data or None if download fails
+        """
+        try:
+            response = requests.get(url, timeout=10, stream=True)
+            response.raise_for_status()
+
+            # Read image data and encode as base64
+            image_data = response.content
+            b64_image = base64.b64encode(image_data).decode('utf-8')
+
+            # Detect content type from headers or URL
+            content_type = response.headers.get('content-type', 'image/png')
+            if not content_type.startswith('image/'):
+                # Fallback based on URL extension
+                if url.lower().endswith(('.jpg', '.jpeg')):
+                    content_type = 'image/jpeg'
+                else:
+                    content_type = 'image/png'
+
+            return f"data:{content_type};base64,{b64_image}"
+
+        except Exception as e:
+            logger.warning(f"Failed to download screenshot {url}: {e}")
+            return None
 
     def _parse_vision_response(self, response_text: str) -> Dict[str, Any]:
         """
@@ -687,40 +738,29 @@ class AIAnalyzer:
 
         visual_elements_text = ", ".join(visual_elements)
 
-        # Build the final prompt
+        # Build the final prompt with anti-AI-slop enhancements
         return f"""
-        Create a professional social media image that represents the user action: "{primary_text} {secondary_text}".
-        This image should clearly show what the user accomplished in their journey.
+        Editorial illustration for "{primary_text} {secondary_text}" in modern magazine style.
 
-        CONTEXT REQUIREMENTS:
-        - Flow Type: {flow_type}
-        - Primary Action: {action}
-        - Object/Focus: {object_name if object_name else 'general task'}
-        - Confidence: {confidence:.1f}/1.0
+        VISUAL STYLE (CRITICAL - AVOID AI LOOK):
+        - Style: Geometric editorial illustration like Malika Favre or Bloomberg Businessweek
+        - Composition: Asymmetric layout, rule of thirds, NOT centered
+        - Colors: {color_scheme} with 15% desaturation (avoid perfect saturation)
+        - Imperfections: Subtle paper texture, slight grain, hand-drawn quality
+        - Shadows: Natural, soft shadows with 20% opacity, not perfect gradients
+        - Lines: Varying weights (2-4px), slightly imperfect, organic feel
 
-        TEXT OVERLAY REQUIREMENTS (CRITICAL FOR LEGIBILITY):
-        - Primary text: "{primary_text}" (large, bold, high contrast)
-        - Secondary text: "{secondary_text}" (medium size, clear)
-        - Font: Bold sans-serif (like Helvetica Bold or Arial Black)
-        - Text placement: Top or bottom third with solid background
-        - Text size: Minimum 48pt for primary, 32pt for secondary
-        - High contrast: Use {color_scheme} for maximum readability
-        - Text background: Solid color block for maximum legibility
-        - NO text overlapping complex backgrounds
+        SPECIFIC ELEMENTS:
+        - Main subject: {visual_elements_text} in isometric or 3/4 perspective
+        - Typography: "{primary_text}" bold, "{secondary_text}" lighter
+        - NO generic icons, NO perfect symmetry, NO stock photo aesthetics
+        - Include: Actual product/interface elements, not symbolic representations
 
-        VISUAL ELEMENTS:
-        - Main elements: {visual_elements_text}
-        - Style: {style_description}
-        - Composition: Clean, uncluttered layout
-        - Focus: Clearly represent the action "{primary_text}"
-        - Include: Visual representation of what the user actually did
-
-        COMPOSITION REQUIREMENTS:
-        - 70% visual elements showing the action/object
-        - 30% clear space for legible text
-        - Professional appearance suitable for social media
-        - Immediately understandable what action was completed
-        - Optimized for engagement and clarity
+        TECHNICAL SPECS:
+        - Aspect ratio: 16:9 for social media
+        - Depth: Atmospheric perspective with foreground/background separation
+        - Texture: Visible paper/canvas grain throughout
+        - Quality: Hand-crafted illustration feel, NOT computer-generated look
         """
 
         # Keep visual_analysis fallback for when we don't have flow context

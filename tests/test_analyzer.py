@@ -243,7 +243,7 @@ class TestAIAnalyzer:
                         sample_flow_summary, sample_analysis, None, None, None
                     )
 
-                    assert "professional social media image" in prompt
+                    assert "Editorial illustration" in prompt
                     assert "Made Easy" in prompt
-                    assert "CONTEXT REQUIREMENTS" in prompt
-                    assert "TEXT OVERLAY REQUIREMENTS" in prompt
+                    assert "VISUAL STYLE" in prompt
+                    assert "SPECIFIC ELEMENTS" in prompt
