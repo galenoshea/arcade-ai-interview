@@ -1,0 +1,95 @@
+[tool.poetry]
+name = "arcade-flow-analyzer"
+version = "1.0.0"
+description = "Professional AI-powered analysis tool for Arcade flow recordings"
+authors = ["Interview Candidate <candidate@example.com>"]
+readme = "README.md"
+packages = [{include = "arcade_flow_analyzer", from = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.8.1"
+openai = "^1.0.0"
+python-dotenv = "^1.0.0"
+requests = "^2.31.0"
+Pillow = "^10.0.0"
+python-dateutil = "^2.8.2"
+tqdm = "^4.65.0"
+markdown = "^3.5.0"
+httpx = "^0.25.0"
+pydantic = "^2.0.0"
+loguru = "^0.7.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.0"
+pytest-asyncio = "^0.21.0"
+pytest-cov = "^4.1.0"
+black = "^23.0.0"
+flake8 = "^6.0.0"
+mypy = "^1.5.0"
+
+[tool.poetry.scripts]
+analyze-flow = "arcade_flow_analyzer.main:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
+target-version = ['py38', 'py39', 'py310', 'py311']
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+strict_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+check_untyped_defs = true
+no_implicit_reexport = true
+show_error_codes = true
+mypy_path = "src"
+packages = ["arcade_flow_analyzer"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "--cov=src/arcade_flow_analyzer",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--cov-fail-under=80"
+]
+
+[tool.coverage.run]
+source = ["src"]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:"
+]
+
+[tool.flake8]
+max-line-length = 88
+extend-ignore = ["E203", "W503"]
+exclude = [
+    ".git",
+    "__pycache__",
+    "build",
+    "dist",
+    ".venv",
+    ".cache"
+]
