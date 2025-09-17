@@ -330,7 +330,7 @@ from arcade_flow_analyzer.analyzer import AIAnalyzer
 import json
 
 # Load flow data
-with open("data/raw/Flow.json", "r") as f:
+with open("data/Flow.json", "r") as f:
     flow_data = json.load(f)
 
 # Parse interactions

@@ -46,8 +46,8 @@ The Arcade Flow Analyzer is a professional-grade tool that transforms Arcade flo
 
 4. **Prepare your data:**
    ```bash
-   # Place your Flow.json file in the data/raw/ directory
-   cp your-flow.json data/raw/Flow.json
+   # Place your Flow.json file in the data/ directory
+   cp your-flow.json data/Flow.json
    ```
 
 ## Usage
@@ -141,8 +141,7 @@ The analyzer expects this structure:
 ```
 project/
 ├── data/
-│   └── raw/
-│       └── Flow.json          # Your Arcade flow data
+│   └── Flow.json              # Your Arcade flow data
 ├── results/                   # Generated reports (auto-created)
 ├── .cache/                    # API response cache (auto-created)
 ├── logs/                      # Application logs (auto-created)
@@ -189,9 +188,9 @@ ERROR: OpenAI API key is required
 
 #### 2. Missing Flow File
 ```
-ERROR: File not found: data/raw/Flow.json
+ERROR: File not found: data/Flow.json
 ```
-**Solution**: Place your Flow.json file in `data/raw/` directory
+**Solution**: Place your Flow.json file in `data/` directory
 
 #### 3. API Rate Limits
 ```
@@ -314,7 +313,7 @@ from arcade_flow_analyzer.parser import FlowParser
 import json
 
 # Load and analyze programmatically
-with open("data/raw/Flow.json") as f:
+with open("data/Flow.json") as f:
     flow_data = json.load(f)
 
 parser = FlowParser(flow_data)

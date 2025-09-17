@@ -58,10 +58,10 @@ RESULTS_DIR=results
 #### `FLOW_FILE`
 **Description**: Path to the input Flow.json file
 **Type**: Path
-**Default**: `data/raw/Flow.json`
+**Default**: `data/Flow.json`
 
 ```bash
-FLOW_FILE=data/raw/Flow.json
+FLOW_FILE=data/Flow.json
 ```
 
 ## Configuration Files
@@ -80,7 +80,7 @@ LOG_LEVEL=INFO
 # Optional - Directory configuration
 CACHE_DIR=.cache
 RESULTS_DIR=results
-FLOW_FILE=data/raw/Flow.json
+FLOW_FILE=data/Flow.json
 ```
 
 ### `.env.example` Template
@@ -93,7 +93,7 @@ OPENAI_API_KEY=your_openai_api_key_here
 LOG_LEVEL=INFO
 CACHE_DIR=.cache
 RESULTS_DIR=results
-FLOW_FILE=data/raw/Flow.json
+FLOW_FILE=data/Flow.json
 
 # Optional: Custom configuration
 # MODEL_PREFERENCE=premium  # premium|standard|auto
@@ -178,7 +178,7 @@ Solution: Ensure the parent directory exists and is writable
 
 #### Missing Flow File
 ```
-ERROR: Flow file not found: data/raw/Flow.json
+ERROR: Flow file not found: data/Flow.json
 Solution: Place your Flow.json file in the specified location
 ```
 
@@ -220,8 +220,7 @@ config.setup_logging()
 project/
 ├── .env                    # Configuration file
 ├── data/
-│   └── raw/
-│       └── Flow.json      # Input data (FLOW_FILE)
+│   └── Flow.json          # Input data (FLOW_FILE)
 ├── results/               # Output directory (RESULTS_DIR)
 ├── .cache/                # Cache directory (CACHE_DIR)
 └── logs/                  # Log files
@@ -319,7 +318,7 @@ chmod 755 results/ .cache/
 #### 3. Path Issues
 ```bash
 # Verify paths are correct
-python -c "from pathlib import Path; print(Path('data/raw/Flow.json').exists())"
+python -c "from pathlib import Path; print(Path('data/Flow.json').exists())"
 ```
 
 ### Debug Configuration

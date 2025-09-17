@@ -119,7 +119,7 @@ arcade-ai-interview/
 ├── tests/                   # Test suite
 ├── docs/                    # Documentation
 ├── data/
-│   └── raw/                 # Input data
+│   └── Flow.json            # Input data
 ├── results/                 # Generated outputs
 ├── logs/                    # Application logs
 ├── .cache/                  # API response cache
