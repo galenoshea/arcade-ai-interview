@@ -17,7 +17,6 @@ from .config import Config, get_config
 from .parser import FlowParser
 from .analyzer import AIAnalyzer
 from .reporter import ReportGenerator
-from .behavioral_analyzer import BehavioralAnalyzer
 
 logger = logging.getLogger(__name__)
 
@@ -44,9 +43,6 @@ def main():
 
         logger.info("Starting Arcade Flow Analysis...")
 
-        # Optional: Display configuration info for debugging
-        if logger.isEnabledFor(logging.DEBUG):
-            config.display_info()
 
         # Load flow data
         logger.info(f"Loading flow data from {config.FLOW_FILE}")
@@ -57,7 +53,6 @@ def main():
         parser = FlowParser(flow_data)
         analyzer = AIAnalyzer()
         reporter = ReportGenerator()
-        behavioral_analyzer = BehavioralAnalyzer(flow_data)
 
         # Extract and analyze data
         logger.info("Extracting user interactions...")
@@ -99,9 +94,6 @@ def main():
         logger.info("Performing comprehensive AI analysis...")
         analysis = analyzer.analyze_user_intent(interactions, flow_summary, visual_analysis)
 
-        # Behavioral analytics
-        logger.info("Performing behavioral analytics...")
-        behavioral_analysis = behavioral_analyzer.analyze_user_behavior()
 
         # Generate social media image with dynamic flow context and company branding
         logger.info("Generating social media image with dynamic flow context...")
@@ -110,7 +102,7 @@ def main():
         # Generate final report
         logger.info("Generating comprehensive report...")
         report_path = reporter.generate_markdown_report(
-            flow_summary, interactions, analysis, journey_analysis, image_path, visual_analysis, behavioral_analysis, chapters, videos
+            flow_summary, interactions, analysis, journey_analysis, image_path, visual_analysis, chapters, videos
         )
 
         logger.info(f"Analysis complete! Report saved to: {report_path}")

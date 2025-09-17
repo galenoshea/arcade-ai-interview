@@ -38,13 +38,12 @@ class ReportGenerator:
         journey_analysis: Dict,
         image_path: Optional[str] = None,
         visual_analysis: Optional[Dict] = None,
-        behavioral_analysis: Optional[Dict] = None,
         chapters: Optional[List[Dict]] = None,
         videos: Optional[List[Dict]] = None,
     ) -> str:
         """
         Generate a comprehensive markdown report.
-        Enhanced with visual, behavioral, and content analysis insights.
+        Enhanced with visual and content analysis insights.
 
         Args:
             flow_summary: Flow metadata summary
@@ -53,7 +52,6 @@ class ReportGenerator:
             journey_analysis: User journey analysis
             image_path: Optional path to generated social media image
             visual_analysis: Optional visual analysis results from GPT-4 Vision
-            behavioral_analysis: Optional behavioral analysis results
             chapters: Optional chapter content from CHAPTER steps
             videos: Optional video content from VIDEO steps
 
@@ -61,7 +59,7 @@ class ReportGenerator:
             Path to the generated report file
         """
         report_content = self._create_report_content(
-            flow_summary, interactions, analysis, journey_analysis, image_path, visual_analysis, behavioral_analysis, chapters, videos
+            flow_summary, interactions, analysis, journey_analysis, image_path, visual_analysis, chapters, videos
         )
 
         # Save the report
@@ -80,13 +78,12 @@ class ReportGenerator:
         journey_analysis: Dict,
         image_path: Optional[str],
         visual_analysis: Optional[Dict] = None,
-        behavioral_analysis: Optional[Dict] = None,
         chapters: Optional[List[Dict]] = None,
         videos: Optional[List[Dict]] = None,
     ) -> str:
         """
         Create the markdown content for the report.
-        Enhanced with visual and behavioral analysis insights.
+        Enhanced with visual analysis insights.
 
         Args:
             flow_summary: Flow metadata summary
@@ -171,7 +168,6 @@ The user navigated through the following pages during their journey:
 
 {self._format_visual_analysis(visual_analysis)}
 
-{self._format_behavioral_analysis(behavioral_analysis)}
 
 {self._format_content_analysis(chapters, videos, flow_summary)}
 
@@ -318,82 +314,6 @@ https://app.arcade.software/share/{flow_summary.get('name', '').replace(' ', '')
 
         return content
 
-    def _format_behavioral_analysis(self, behavioral_analysis: Optional[Dict]) -> str:
-        """
-        Format behavioral analysis results for inclusion in the markdown report.
-
-        Args:
-            behavioral_analysis: Optional behavioral analysis results
-
-        Returns:
-            Formatted markdown content for behavioral analysis section
-        """
-        if not behavioral_analysis:
-            return ""
-
-        # Handle case where behavioral analysis failed due to insufficient data
-        if "error" in behavioral_analysis:
-            return f"""
----
-
-## Behavioral Analysis
-
-### User Interaction Patterns
-*{behavioral_analysis.get('error', 'Behavioral analysis could not be performed')}*
-"""
-
-        timing = behavioral_analysis.get("timing_analysis", {})
-        velocity = behavioral_analysis.get("interaction_velocity", {})
-        decisions = behavioral_analysis.get("decision_patterns", {})
-        engagement = behavioral_analysis.get("engagement_score", {})
-        confidence = behavioral_analysis.get("confidence_indicators", {})
-        efficiency = behavioral_analysis.get("journey_efficiency", {})
-        precision = behavioral_analysis.get("precision_analytics", {})
-        insights = behavioral_analysis.get("behavior_insights", [])
-
-        content = f"""
----
-
-## Behavioral Analysis
-
-### User Interaction Patterns
-- **Total Duration:** {timing.get('total_duration_seconds', 'N/A')} seconds
-- **Average Delay Between Actions:** {timing.get('average_delay', 'N/A')} seconds
-- **Interaction Tempo:** {timing.get('interaction_tempo', 'N/A')}
-- **Total Interactions:** {timing.get('total_interactions', 'N/A')}
-
-### Interaction Velocity & Pacing
-- **Interactions per Minute:** {velocity.get('interactions_per_minute', 'N/A')}
-- **Velocity Classification:** {velocity.get('velocity_classification', 'N/A')}
-- **Pacing Consistency:** {velocity.get('pacing_consistency', 'N/A')}
-
-### Decision-Making Analysis
-- **Decision Making Style:** {decisions.get('decision_making_style', 'N/A')}
-- **Hesitation Points:** {decisions.get('hesitation_indicators', 'N/A')}
-- **Quick Decisions:** {decisions.get('confidence_indicators', 'N/A')}
-
-### User Engagement & Confidence
-- **Engagement Score:** {engagement.get('engagement_score', 'N/A')}/100 ({engagement.get('engagement_level', 'N/A')})
-- **Confidence Level:** {confidence.get('confidence_level', 'N/A')} ({confidence.get('confidence_score', 'N/A')}/100)
-- **Journey Efficiency:** {efficiency.get('efficiency_level', 'N/A')} ({efficiency.get('efficiency_score', 'N/A')}/100)
-
-### Interaction Precision Analytics
-{self._format_precision_analytics(precision)}
-
-### Behavioral Insights
-"""
-
-        if insights:
-            for insight in insights:
-                content += f"- {insight}\n"
-        else:
-            content += "- No specific behavioral insights were identified\n"
-
-        content += """
-*Analysis based on user interaction timing patterns, click sequences, and behavioral indicators.*
-"""
-
-        return content
 
     def _format_content_analysis(self, chapters: Optional[List[Dict]], videos: Optional[List[Dict]], flow_summary: Dict) -> str:
         """
@@ -469,56 +389,3 @@ https://app.arcade.software/share/{flow_summary.get('name', '').replace(' ', '')
 
         return content
 
-    def _format_precision_analytics(self, precision: Optional[Dict]) -> str:
-        """
-        Format precision analytics for inclusion in the behavioral analysis section.
-
-        Args:
-            precision: Optional precision analytics results
-
-        Returns:
-            Formatted markdown content for precision analytics
-        """
-        if not precision or "error" in precision:
-            return "*Precision analytics could not be performed due to insufficient coordinate data*"
-
-        movement = precision.get("movement_analysis", {})
-        velocity = precision.get("velocity_analysis", {})
-        screen_usage = precision.get("screen_usage", {})
-        click_patterns = precision.get("click_patterns", {})
-        precision_insights = precision.get("precision_insights", [])
-
-        content = f"""
-**Movement Analysis:**
-- Total Movement Distance: {movement.get('total_movement_distance', 'N/A')} pixels
-- Average Movement: {movement.get('average_movement_distance', 'N/A')} pixels
-- Movement Efficiency: {movement.get('movement_efficiency', 'N/A')}%
-- Movement Pattern: {movement.get('movement_pattern', 'N/A')}
-
-**Velocity & Precision:**
-- Average Movement Velocity: {velocity.get('average_movement_velocity', 'N/A')} px/sec
-- Velocity Consistency: {velocity.get('velocity_consistency', 'N/A')}
-- Precision Score: {click_patterns.get('precision_score', 'N/A')}/100
-
-**Screen Usage:**
-- Screen Coverage: {screen_usage.get('screen_coverage_x', 'N/A')} x {screen_usage.get('screen_coverage_y', 'N/A')} pixels
-- Interaction Center: {screen_usage.get('interaction_center', 'N/A')}
-- Exploration Level: {screen_usage.get('screen_exploration', 'N/A')}
-"""
-
-        # Add clustering analysis if available
-        clustering = click_patterns.get("clustering_analysis", {})
-        if clustering:
-            content += f"""
-**Click Patterns:**
-- Click Clusters: {clustering.get('cluster_count', 'N/A')}
-- Clustering Type: {clustering.get('clustering_type', 'N/A')}
-"""
-
-        # Add precision insights
-        if precision_insights:
-            content += "\n**Precision Insights:**\n"
-            for insight in precision_insights:
-                content += f"- {insight}\n"
-
-        return content

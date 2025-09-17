@@ -57,7 +57,6 @@ class TestReportGenerator:
                 sample_journey_analysis,
                 str(fake_image_path),
                 None,  # visual_analysis
-                None,  # behavioral_analysis
                 None,  # chapters
                 None,  # videos
             )
@@ -94,7 +93,6 @@ class TestReportGenerator:
                 sample_journey_analysis,
                 None,  # No image
                 None,  # visual_analysis
-                None,  # behavioral_analysis
                 None,  # chapters
                 None,  # videos
             )
@@ -139,8 +137,7 @@ class TestReportGenerator:
                     sample_journey_analysis,
                     "test_image.png",
                     None,  # visual_analysis
-                    None,  # behavioral_analysis
-                    None,  # chapters
+                        None,  # chapters
                     None,  # videos
                 )
 
@@ -165,7 +162,6 @@ class TestReportGenerator:
                 sample_journey_analysis,
                 None,
                 None,  # visual_analysis
-                None,  # behavioral_analysis
                 None,  # chapters
                 None,  # videos
             )
@@ -189,7 +185,6 @@ class TestReportGenerator:
                 sample_journey_analysis,
                 None,
                 None,  # visual_analysis
-                None,  # behavioral_analysis
                 None,  # chapters
                 None,  # videos
             )
@@ -252,7 +247,6 @@ class TestReportGenerator:
                 sample_journey_analysis,
                 None,
                 None,  # visual_analysis
-                None,  # behavioral_analysis
                 None,  # chapters
                 None,  # videos
             )
@@ -292,7 +286,6 @@ class TestReportGenerator:
                 journey_analysis,
                 None,
                 None,  # visual_analysis
-                None,  # behavioral_analysis
                 None,  # chapters
                 None,  # videos
             )

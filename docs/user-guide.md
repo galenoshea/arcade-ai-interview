@@ -90,7 +90,7 @@ results/
 ### 2. User Journey Analysis
 - Primary user goal identification
 - Flow metadata (steps, use case, AI processing)
-- Key behavioral insights
+- Key insights from AI analysis
 
 ### 3. User Interactions Breakdown
 - Chronological list of user actions

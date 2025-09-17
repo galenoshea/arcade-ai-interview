@@ -82,19 +82,6 @@ class Config:
         """Get cache TTL in seconds."""
         return cls.CACHE_TTL_HOURS * 3600
 
-    @classmethod
-    def display_info(cls) -> None:
-        """Display configuration information for debugging."""
-        print("=" * 60)
-        print("ARCADE FLOW ANALYZER CONFIGURATION")
-        print("=" * 60)
-        print(f"Project Root: {cls.PROJECT_ROOT}")
-        print(f"Flow File: {cls.FLOW_FILE}")
-        print(f"Cache Directory: {cls.CACHE_DIR}")
-        print(f"Results Directory: {cls.RESULTS_DIR}")
-        print(f"API Key Available: {'Yes' if cls.OPENAI_API_KEY else 'No'}")
-        print(f"Cache TTL: {cls.CACHE_TTL_HOURS} hours")
-        print("=" * 60)
 
 
 # Create global config instance
